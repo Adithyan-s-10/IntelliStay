@@ -1,0 +1,20 @@
+.bookings-container {
+    padding: 20px;
+  }
+  
+  .bookings-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .booking-card {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .MyBookingsnav{
+    
+        background-color: rgb(17, 186, 212);
+    
+  }

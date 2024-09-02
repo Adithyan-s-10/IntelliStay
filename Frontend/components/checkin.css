@@ -1,0 +1,266 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+
+:root {
+  --primary-color: #4481eb;
+  --primary-color-dark: #5995fd;
+  --text-dark: #0c0a09;
+  --text-light: hsl(25, 5%, 45%);
+  --white: #ffffff;
+  --max-width: 1200px;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+}
+
+
+
+
+.booking__container {
+  padding-block: 0;
+  
+}
+
+.booking__form {
+  padding: 2rem;
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  background-color: var(--white);
+  border-radius: 10px;
+  transform: translateY(-50%);
+  box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.input__group {
+  flex: 1 1 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.input__group span {
+  font-size: 1.75rem;
+  color: var(--primary-color);
+}
+
+.input__group label {
+  font-weight: 500;
+  color: var(--text-dark);
+}
+
+.input__group input {
+  display: block;
+  width: 100%;
+  max-width: 150px;
+  padding-block: 5px;
+  color: var(--text-dark);
+  font-size: 0.9rem;
+  outline: none;
+  border: none;
+}
+
+.input__group input::placeholder {
+  color: var(--text-light);
+}
+
+
+/* .guest__dropdown {
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.dropdown__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.dropdown__item button {
+  padding: 5px 10px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.dropdown__item button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+} */
+
+.guest__popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  width: 300px;
+}
+
+.popup__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.popup__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.popup__item span {
+  font-size: 16px;
+}
+
+.popup__item button {
+  padding: 5px 10px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.popup__item button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.popup__close {
+  margin-top: 10px;
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.popup__close:hover {
+  background-color: #0056b3;
+}
+
+
+.date-picker {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: #f8f8f8;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.date-picker:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  outline: none;
+}
+
+.date-picker::-webkit-calendar-picker-indicator {
+  filter: invert(0.5);
+}
+
+
+@media (max-width: 600px) {
+  .booking__form {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+  }
+
+  .input__group {
+    flex: 1 1 auto;
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .input__btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .guest__popup {
+    top: auto;
+    bottom: 10%;
+    transform: translate(-50%, 0);
+    width: 90%;
+  }
+}
+
+@media (max-width: 600px) {
+  .section__container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end; /* Ensure content moves downwards */
+    height: 100vh; /* Ensures the section occupies the full height of the viewport */
+  }
+}
+
+.booking__form {
+  transform: none; /* Remove translateY(-50%) on smaller screens */
+}
+
+@media (max-width: 600px) {
+  .booking__container {
+    padding-bottom: 2rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .section__container {
+    overflow-y: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .booking__form {
+    flex-direction: column;
+    padding: 1rem;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  .guest__popup {
+    top: auto;
+    bottom: 10%;
+    transform: translate(-50%, 0);
+    width: 90%;
+  }
+
+  .input__group {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .input__btn {
+    width: 100%;
+  }
+}
