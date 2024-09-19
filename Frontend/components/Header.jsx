@@ -91,7 +91,7 @@ import ScrollReveal from 'scrollreveal';
             localStorage.removeItem('userEmail');
             localStorage.removeItem("token");
             localStorage.removeItem("userId");
-            localStorage.setItem('signout', 'signout');
+            // localStorage.setItem('signout', 'signout');
             navigate("/signup"); // Redirect to public route
           }
         })

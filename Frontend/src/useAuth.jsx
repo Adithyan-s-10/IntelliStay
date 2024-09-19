@@ -6,13 +6,14 @@ const useAuth = () => {
   const history = useNavigate();
 
   useEffect(() => {
-    const id = localStorage.getItem('signout');
+    const id = localStorage.getItem('userId');
 
-    if (id) {
+    if (!id) {
       history('/signup');
       // Optionally show a session expired message
       Swal.fire('Session expired. Please log in again.');
     }
+    
   }, [history]);
 };
 

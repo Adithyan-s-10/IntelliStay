@@ -4,6 +4,9 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const session = require("express-session");
 const passport = require("passport");
+const multer = require('multer');
+const Papa = require('papaparse');
+const XLSX = require('xlsx');
 const GoogleRegisterModel = require("./models/GooglesignModel");
 const OAuth2Strategy = require("passport-google-oauth2").Strategy;
 const RegisterModel=require("./models/RegisterModel");
@@ -15,6 +18,7 @@ const ReservationModel = require("./models/ReservationModel");
 const StaffModel = require("./models/StaffModel");
 const crypto = require('crypto');
 const HousekeepingJobModel=require("./models/HousekeepingJobModel")
+
 
 const app = express();
 app.use(express.json());
@@ -572,6 +576,26 @@ app.get('/my-bookings/:userId', async (req, res) => {
   });
 
 
+  const upload = multer({ storage: multer.memoryStorage() });
+
+// Handle bulk data upload
+app.post('/uploadBulkData', async (req, res) => {
+    try {
+        const rooms = req.body; // Array of room objects
+
+        // Check if the rooms data is valid
+        if (!Array.isArray(rooms) || rooms.some(room => typeof room !== 'object')) {
+            return res.status(400).json({ message: 'Invalid data format' });
+        }
+
+        // Insert data into the database
+        await RoomModel.insertMany(rooms);
+
+        res.status(200).json({ message: 'Bulk data uploaded successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+});
 app.listen(3001, () => {
     console.log("Server connected");
 });
