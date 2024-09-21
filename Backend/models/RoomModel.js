@@ -5,7 +5,9 @@ const RoomSchema = new mongoose.Schema({
     roomtype:String,
     status:String, 
     rate: Number,
-    description:String
+    description:String,
+    images:[String],
+
 },{timestamps:true});
 
  const RoomModel = mongoose.model("room",RoomSchema);
