@@ -6,6 +6,18 @@ const HousekeepingJobSchema = new mongoose.Schema({
     task_description: String,
     task_date:Date,
     status:String,
+    photos: {
+        type: [String],
+        default: null
+    },
+    completedAt: {
+        type: Date,
+        default: null
+    },
+    maintenanceRequired: {
+        type: String,
+        default: null
+    }
     
 },{timestamps:true});
 

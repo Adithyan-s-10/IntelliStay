@@ -19,6 +19,7 @@ const ReservationModel = require("./models/ReservationModel");
 const StaffModel = require("./models/StaffModel");
 const crypto = require('crypto');
 const HousekeepingJobModel=require("./models/HousekeepingJobModel")
+const LeaveApplicationModel=require("./models/LeaveApplicationModel")
 
 
 const app = express();
@@ -35,6 +36,7 @@ app.use(cors({
 mongoose.connect("mongodb://127.0.0.1:27017/test2");
 
 app.use("/uploads",express.static("./uploads/rooms"))
+app.use("/cleanedrooms",express.static("./uploads/cleanedrooms"))
 // Setup session
 var MemoryStore =session.MemoryStore;
 app.use(session({
@@ -835,6 +837,190 @@ app.put('/staff/change-password/:id', async (req, res) => {
 });
 
 
+app.post('/asjobdetails/:staffId', async (req, res) => {
+    try {
+      // Get the staffId from the request params
+      const staffId = req.params.staffId;
+  
+      // Find jobs assigned to the specific staffId
+      const jobs = await HousekeepingJobModel.find({ staff_id: staffId });
+  
+      // If no jobs are found, send an empty array
+      if (!jobs || jobs.length === 0) {
+        return res.status(200).json([]);
+      }
+  
+      // Array to hold job details with room number
+      const jobDetailsWithRoomNo = await Promise.all(
+        jobs.map(async (job) => {
+          // Find the room based on room_id
+          const room = await RoomModel.findById(job.room_id);
+  
+          // Return an object with desired fields (roomno, task_description, task_date, status)
+          return {
+            _id:job._id,
+            roomno: room ? room.roomno : 'Unknown', // Fallback in case room is not found
+            task_description: job.task_description,
+            task_date: job.task_date,
+            status: job.status,
+            photos:job.photos,
+            maintenanceRequired:job.maintenanceRequired,
+            completedAt:job.completedAt
+          };
+        })
+      );
+  
+      // Respond with the job details including room number
+      res.status(200).json(jobDetailsWithRoomNo);
+    } catch (error) {
+      console.error('Error fetching job details:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+
+
+  app.post('/pickJob' ,async (req, res) => {
+    const { jobId } = req.body;
+    try {
+        const job = await HousekeepingJobModel.findById(jobId);
+        if (!job) {
+            return res.status(404).json({ message: 'Job not found' });
+        }
+        job.status = 'cleaning in progress';
+        await job.save();
+        res.status(200).json({ message: 'Job picked successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error picking job', error });
+    }
+}
+  );
+
+  const storagee = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/cleanedrooms');
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${Date.now()}-${file.originalname}`);
+    }
+});
+const uploadsss = multer({ storage: storagee });
+
+
+
+// Complete a job
+app.post('/completeJob', uploadsss.array('photos', 5) ,async (req, res) => {
+    const { jobId, maintenanceRequired } = req.body;
+    const files = req.files;
+
+    try {
+        const job = await HousekeepingJobModel.findById(jobId);
+        if (!job) {
+            return res.status(404).json({ message: 'Job not found' });
+        }
+
+        const photoFilenames = files.map(file => file.filename);
+        job.photos = photoFilenames;
+        job.status = 'cleaning completed';
+        job.maintenanceRequired = maintenanceRequired;
+        job.completedAt = new Date(); 
+        await job.save();
+
+        res.status(200).json({ message: 'Job completed successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error completing job', error });
+    }
+}
+);
+
+
+app.get('/jobdetail/:id', async (req, res) => {
+    try {
+      const jobId = req.params.id;
+  
+      // Find the job in the database
+      const job = await HousekeepingJobModel.findById(jobId);
+  
+      if (!job) {
+        return res.status(404).json({ message: 'Job not found' });
+      }
+  
+      // Fetch the corresponding room details using the room ID from the job
+      const room = await RoomModel.findById(job.room_id); // Assuming job has a field named roomId
+  
+      if (!room) {
+        return res.status(404).json({ message: 'Room not found' });
+      }
+  
+      // Construct the response object
+      const response = {
+        roomno: room.roomno,
+        task_description: job.task_description,
+        task_date: job.task_date,
+        status: job.status,
+        photos: job.photos,
+        maintenanceRequired: job.maintenanceRequired,
+        completedAt: job.completedAt,
+      };
+  
+      res.status(200).json(response);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error', error });
+    }
+  });
+
+  
+  app.post('/applyleave', async (req, res) => {
+    try {
+        const { staff_id, leaveType, startDate, endDate, reason } = req.body;
+
+        // Check if leave application already exists
+        const existingApplication = await LeaveApplicationModel.findOne({ staff_id, startDate, endDate });
+        if (existingApplication) {
+            return res.status(400).json("exists");
+        }
+
+        // Create a new leave application
+        const newLeaveApplication = new LeaveApplicationModel({
+            staff_id,
+            leaveType,
+            startDate,
+            endDate,
+            reason,
+            status: 'Pending',
+            appliedon:new Date() // or whatever initial status you want
+        });
+
+        await newLeaveApplication.save();
+        res.status(201).json(newLeaveApplication);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error', error });
+    }
+});
+
+
+app.post('/leaveDetails/:userId',async (req, res) => {
+    try {
+      const leaves = await LeaveApplicationModel.find({ staff_id: req.params.userId });
+      res.json(leaves);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+);
+  
+  // Get leave detail by ID
+  app.get('/leaveDetail/:leaveId',async (req, res) => {
+    try {
+      const leave = await LeaveApplicationModel.findById(req.params.leaveId);
+      if (!leave) return res.status(404).json({ message: "Leave not found" });
+      res.json(leave);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+);
 
 
 app.listen(3001, () => {
